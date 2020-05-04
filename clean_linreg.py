@@ -67,27 +67,4 @@ df_destino.columns = ['pais', 'valor_semana','dia_semana', 'voos']
 df_final = df_origem.merge(df_destino, 'outer', on = ['pais', 'valor_semana','dia_semana'])
 df_final['voos_soma'] = df_final['voos_x'].fillna(0) + df_final['voos_y'].fillna(0)
 lr = df_final[['pais','valor_semana','dia_semana','voos_soma']]
-lr
-
-
-# In[116]:
-
-
-lr[lr.pais == 'Iran']
-
-
-# In[108]:
-
-
-from statsmodels.formula.api import ols
-
-model = ols("voos_soma ~ pais + valor_semana + dia_semana",  data=lr)
-response = model.fit()
-response.summary()
-
-
-# In[109]:
-
-
-df_final.voos_soma.sum()
-
+lr.to_csv('data/df_linreg.csv', index=False)
