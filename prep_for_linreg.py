@@ -1,44 +1,61 @@
 import pandas as pd
+import datetime
 import gc
 
-def split_date_columns(df):
-    df['year'] = df['lastseen'].apply(lambda x: x[:4])
-    df['month'] = df['lastseen'].apply(lambda x: x[5:7])
-    df['day'] = df['lastseen'].apply(lambda x: x[8:10])
-    df = df.drop(columns='lastseen')
+#selected_aircrafts = ['ERJ 170-200 LR', 'BOEING 737-8AS', 'A320 214', '172S', 'A320-214', '737-7H4', 'A320-232', 'A320 232', 'A321-231', 'CL-600-2D24', '737-823', 'A320 214SL', '737-8H4', 'PA-28-181', '737-924ER', 'A321 231SL', 'AIRBUS A319-111', '737-800', 'A319 112', 'A321 231', 'CL-600-2B19', 'A320 232SL', 'A321-211', '172N', 'A319-112', 'A319 111', 'CL-600-2C10', '208B', 'EMB-145LR', 'AIRBUS A320-232', '737-824', '737NG 8FE/W', 'BD-100-1A10', 'SR22', '737NG 8K2/W', 'AIRBUS A320-214', '737NG 838/W', 'BOEING 737-800', '737-900ER', 'DHC-8-402 (Dehavilland)', 'AIRBUS A319-131', 'A330 343E', '172R', 'A319-132', '172M', '737NG 800/W', 'A380 861', 'SR20', '737NG 823/W', 'A319-111']
+### get models removed temporarily ###
+def get_models(df):
+    return df[df.model.isin(selected_aircrafts)]
+
+def add_dateinfo(df):
+    df['lastseen'] = pd.to_datetime(df['lastseen'])
+    df['valor_semana'] = df['lastseen'].apply(lambda x: x.isocalendar()[1])
+    
+    # 0 -> segunda .... 7 -> domingo
+    df['dia_semana'] = df['lastseen'].apply(lambda x: x.weekday())
     return df
 
-def df_grouped(df):
-    df = df.groupby(['pais_origem', 'pais_destino', 'year', 'month', 'day']).size().reset_index()
-    df = pd.DataFrame(df)
-    return df
+### get models removed temporarily ###
 
 #2018
-df = pd.read_csv('data/flights_2018_cleaned.csv')
-df = split_date_columns(df)
-df = df_grouped(df)
+df = pd.read_csv('data/filghts_2018_model.csv')
+#df  = get_models(df)
+df = add_dateinfo(df)
 
 #2019 p1
-df_2 = pd.read_csv('data/flights_2019_1_cleaned.csv')
-df_2 = split_date_columns(df_2)
-df_2 = df_grouped(df_2)
+df_2 = pd.read_csv('data/filghts_2019_1_model.csv')
+#df_2  = get_models(df_2)
+df_2 = add_dateinfo(df_2)
 df = df.append(df_2)
-
 #clean memory
 del df_2
 gc.collect()
 
 #2019 p2
-df_3 = pd.read_csv('data/flights_2019_2_cleaned.csv')
-df_3 = split_date_columns(df_3)
-df_3 = df_grouped(df_3)
-
+df_3 = pd.read_csv('data/filghts_2019_2_model.csv')
+#df_3  = get_models(df_3)
+df_3 = add_dateinfo(df_3)
+df = df.append(df_3)
 #full dataframe
 df = df.append(df_3)
-
 #clean memory
 del df_3
 gc.collect()
 
-df.to_csv('data/df_linreg.csv', index=False)
+
+#Grouping origin df
+df_origem = df.groupby(['pais_origem', 'valor_semana', 'dia_semana']).size().reset_index()
+df_origem = pd.DataFrame(df_origem)
+df_origem.columns = ['pais', 'valor_semana','dia_semana', 'voos']
+
+#Grouping destination df
+df_destino =df.groupby(['pais_destino', 'valor_semana', 'dia_semana']).size().reset_index()
+df_destino = pd.DataFrame(df_destino)
+df_destino.columns = ['pais', 'valor_semana','dia_semana', 'voos']
+
+#Merging origin and destination (we use sum of fligths in the country)
+df_final = df_origem.merge(df_destino, 'outer', on = ['pais', 'valor_semana','dia_semana'])
+df_final['voos_soma'] = df_final['voos_x'].fillna(0) + df_final['voos_y'].fillna(0)
+df_final = df_final[['pais','valor_semana','dia_semana','voos_soma']]
+df_final.to_csv('data/2018-2019linreg_allAircrafts.csv', index=False)
 
