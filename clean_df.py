@@ -7,6 +7,8 @@ def clean(df):
 
 month_list = ['jan', 'fev', 'mar', 'abr', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 
+
+#change year [2018, 2019, 2020] in csv name
 for i in month_list:
     df_aux =  pd.read_csv('data/'+i+'2018.csv')
     df_aux = clean(df_aux)
@@ -37,5 +39,5 @@ df['pais_destino'] = df['destination'].apply(lambda x: airport_country['pais'][x
 df['model'] = df['icao24'].apply(lambda x: aircraft['model'][x] if x in cods_aircraft.values else None)
 
 df = df[['icao24','lastseen', 'pais_origem', 'pais_destino', 'model']]
-df.to_csv('filghts_2018_model.csv', index=False)
+df.to_csv('flights_2018_cleaned.csv', index=False)
 
