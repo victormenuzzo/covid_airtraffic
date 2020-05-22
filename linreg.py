@@ -16,7 +16,7 @@ response.summary()
 #print(np.expm1(ypred))
 
 #this csv is obtained using prep_for_linreg file
-df2020 = pd.read_csv('data/abr2020_realdata.csv')
+df2020 = pd.read_csv('data/abr2020_linreg_allAircrafts.csv')
 
 def predict_values(x):
     return np.expm1(response.predict({'pais':x[0], 'valor_semana': x[1], 'dia_semana': x[2]}))
