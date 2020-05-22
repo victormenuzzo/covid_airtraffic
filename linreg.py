@@ -28,5 +28,7 @@ df2020['voos_pred'] = df2020.apply(predict_values, axis=1)
 df2020['pct_loss'] = df2020.apply(pct_loss, axis=1)
 
 df_pct_loss = df2020[['pais', 'pct_loss']].groupby('pais').mean().reset_index()
+
+#df used for analysis
 df_pct_loss.to_csv('data/flights_pct_loss.csv', index=False)
 
