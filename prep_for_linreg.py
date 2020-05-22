@@ -18,12 +18,12 @@ def add_dateinfo(df):
 ### get models removed temporarily ###
 
 #2018
-df = pd.read_csv('data/filghts_2018_model.csv')
+df = pd.read_csv('data/filghts_2018_cleaned.csv')
 #df  = get_models(df)
 df = add_dateinfo(df)
 
 #2019 p1
-df_2 = pd.read_csv('data/filghts_2019_1_model.csv')
+df_2 = pd.read_csv('data/filghts_2019_1_cleaned.csv')
 #df_2  = get_models(df_2)
 df_2 = add_dateinfo(df_2)
 df = df.append(df_2)
@@ -32,7 +32,7 @@ del df_2
 gc.collect()
 
 #2019 p2
-df_3 = pd.read_csv('data/filghts_2019_2_model.csv')
+df_3 = pd.read_csv('data/filghts_2019_2_cleaned.csv')
 #df_3  = get_models(df_3)
 df_3 = add_dateinfo(df_3)
 df = df.append(df_3)
