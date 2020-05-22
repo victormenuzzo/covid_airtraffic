@@ -21,6 +21,4 @@ for teste in df[['callsign']].values:
     df[df.callsign == teste[0]] = service_type
     print(str(i) +" " + str(teste[0]) +" "+ str(service_type))
     i=i+1
- 
-print(df)
 df.to_csv('flights_202001.csv')
