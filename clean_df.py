@@ -2,13 +2,14 @@ import pandas as pd
 
 def clean(df):
     df = df[['icao24','lastseen','departure', 'destination']]    
-    df = df.dropna()
+    df = df.dropna(subset=['departure', 'destination'], how='all')
     return df
 
 month_list = ['jan', 'fev', 'mar', 'abr', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 
 
 #change year [2018, 2019, 2020] in csv name
+df = pd.DataFrame()
 for i in month_list:
     df_aux =  pd.read_csv('data/'+i+'2018.csv')
     df_aux = clean(df_aux)
